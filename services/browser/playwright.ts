@@ -1,5 +1,4 @@
 import { chromium } from 'playwright';
-
 import { Browser, BrowserContext, Page } from 'playwright';
 
 let MAX_BROWSER_CONTEXTS = 5;
@@ -19,16 +18,12 @@ type AcquiredPage = {
   pageId: number;
 };
 
-type PageMap = Map<number, PageOptions>;
-
 type BrowserContextOptions = {
   browserContext: BrowserContext;
-  pages: PageMap;
+  pages: PageOptions[];
 };
 
-type BrowserContextMap = Map<number, BrowserContextOptions>;
-
-let browserContexts: BrowserContextMap = new Map();
+let browserContexts: BrowserContextOptions[] = [];
 
 export async function launchBrowser() {
   browser = await chromium.launch({
@@ -53,34 +48,33 @@ async function createPage(
 }
 
 export async function createBrowserContext() {
-  const size = browserContexts.size;
-  if (size >= MAX_BROWSER_CONTEXTS) {
+  if (browserContexts.length >= MAX_BROWSER_CONTEXTS) {
     throw new Error('Maximum number of browser contexts reached');
   }
   const browserContext = await browser.newContext();
 
-  const pages: PageMap = new Map();
+  const pages: PageOptions[] = [];
   for (let i = 0; i < MAX_PAGES_PER_CONTEXT; i++) {
-    pages.set(i, await createPage(browserContext));
+    pages.push(await createPage(browserContext));
   }
-  browserContexts.set(size, { browserContext, pages });
-
-  console.log(browserContexts.size);
+  browserContexts.push({ browserContext, pages });
 }
 
 export function getPage(
   timeout: number,
   retries: number = 100
 ): Promise<AcquiredPage | null> {
-  return new Promise(resolve => {
+  return new Promise((resolve, reject) => {
     const findPage = async () => {
       if (retries <= 0) {
-        resolve(null);
+        reject(null);
         return;
       }
 
-      for (let [browserContextId, browserContextOptions] of browserContexts) {
-        for (let [pageId, pageOptions] of browserContextOptions.pages) {
+      for (let i = 0; i < browserContexts.length; i++) {
+        const browserContextOptions = browserContexts[i];
+        for (let j = 0; j < browserContextOptions.pages.length; j++) {
+          const pageOptions = browserContextOptions.pages[j];
           if (!pageOptions.isLocked) {
             pageOptions.isLocked = true;
             pageOptions.timer = setTimeout(() => {
@@ -88,26 +82,19 @@ export function getPage(
             }, timeout * 1000);
             resolve({
               page: pageOptions.page,
-              browserContextId: browserContextId,
-              pageId: pageId,
+              browserContextId: i,
+              pageId: j,
             });
             return;
           }
         }
       }
 
-      if (browserContexts.size < MAX_BROWSER_CONTEXTS) {
+      if (browserContexts.length < MAX_BROWSER_CONTEXTS) {
         await createBrowserContext();
-        console.log(
-          'Browser context created',
-          browserContexts.size,
-          MAX_BROWSER_CONTEXTS
-        );
-        findPage();
+        setTimeout(findPage, 100);
       } else {
-        setTimeout(() => {
-          findPage();
-        }, 100);
+        setTimeout(findPage, 100);
       }
     };
 
@@ -116,12 +103,12 @@ export function getPage(
 }
 
 export function releasePage(page: AcquiredPage): boolean {
-  const browserContextOptions = browserContexts.get(page.browserContextId);
+  const browserContextOptions = browserContexts[page.browserContextId];
   if (!browserContextOptions) {
     return false;
   }
 
-  const pageOptions = browserContextOptions.pages.get(page.pageId);
+  const pageOptions = browserContextOptions.pages[page.pageId];
   if (!pageOptions) {
     return false;
   }
@@ -129,33 +116,34 @@ export function releasePage(page: AcquiredPage): boolean {
   pageOptions.isLocked = false;
   clearTimeout(pageOptions.timer);
 
-  browserContextOptions.pages.set(page.pageId, pageOptions);
+  browserContextOptions.pages[page.pageId] = pageOptions;
 
-  let minContextEmptyId = browserContexts.size - 1;
+  let minContextEmptyId = browserContexts.length - 1;
 
-  for (let [browserContextId, browserContextOptions] of browserContexts) {
+  for (let i = 0; i < browserContexts.length; i++) {
+    const browserContextOptions = browserContexts[i];
     let pagesInActiveCount = 0;
-    for (let [_, pageOptions] of browserContextOptions.pages) {
-      if (!pageOptions.isLocked) {
+    for (let j = 0; j < browserContextOptions.pages.length; j++) {
+      if (!browserContextOptions.pages[j].isLocked) {
         pagesInActiveCount++;
       }
     }
 
     if (pagesInActiveCount === MAX_PAGES_PER_CONTEXT) {
-      minContextEmptyId = Math.min(minContextEmptyId, browserContextId);
+      minContextEmptyId = Math.min(minContextEmptyId, i);
     } else {
-      minContextEmptyId = browserContextId;
+      minContextEmptyId = i;
     }
   }
 
   for (let i = minContextEmptyId + 1; i < MAX_BROWSER_CONTEXTS; i++) {
-    const browserContextOptions = browserContexts.get(i);
+    const browserContextOptions = browserContexts[i];
     if (!browserContextOptions) {
       continue;
     }
 
     browserContextOptions.browserContext.close();
-    console.log(browserContexts.delete(i));
+    browserContexts.splice(i, 1);
   }
 
   return true;

@@ -17,11 +17,13 @@ async function makeConcurrentRequests(x: number) {
     promises.push(
       fetch('http://localhost:3000/', requestOptions)
         .then((response: Response) => response.text())
-        .then((result: string) => console.log(result))
+        .then(() => console.log('received response', i))
         .catch((error: any) => console.log('error', error))
     );
   }
+  const t = Date.now();
   await Promise.all(promises);
+  console.log('Time taken:', Date.now() - t);
 }
 
 // Extracting the value of x from command line arguments

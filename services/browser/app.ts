@@ -8,6 +8,8 @@ import {
   releasePage,
 } from './playwright';
 
+import { getText } from './utils';
+
 const app = express();
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
@@ -21,8 +23,7 @@ launchBrowser().then(() => {
 });
 
 app.post('/', async (req: Request, res: Response) => {
-  const url = req.body.url;
-  const timeout = req.body.timeout || 10;
+  const { url, timeout = 10, html = true, text = true } = req.body;
 
   try {
     const page = await getPage(timeout);
@@ -33,9 +34,19 @@ app.post('/', async (req: Request, res: Response) => {
     }
 
     await page.page.goto(url);
-    const html = await page.page.content();
+    const HTML = await page.page.content();
     releasePage(page);
-    res.json({ html });
+    const TEXT = getText(HTML);
+    let response = {};
+
+    if (html) {
+      response = { ...response, HTML };
+    }
+    if (text) {
+      response = { ...response, TEXT };
+    }
+
+    res.json(response);
   } catch (e: any) {
     console.log(e);
     res.status(500).json({
