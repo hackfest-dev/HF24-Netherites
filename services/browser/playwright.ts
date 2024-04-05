@@ -27,7 +27,7 @@ let browserContexts: BrowserContextOptions[] = [];
 
 export async function launchBrowser() {
   browser = await chromium.launch({
-    headless: false,
+    // headless: false,
   });
 }
 
