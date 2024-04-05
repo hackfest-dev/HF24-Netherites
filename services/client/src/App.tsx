@@ -1,27 +1,20 @@
+import { Routes, Route } from 'react-router-dom';
 
-
-import { Routes, Route } from "react-router-dom";
-import HomePage from './pages/HomePage'
-import { SideBar } from "./pages/layout/side-bar";
-import NotFound from "./pages/NotFound";
+import Home from './pages/Home';
 
 function App() {
-
-
   return (
-    <Routes>
-
-      <Route path="*" element={<NotFound />} />
-
-      <Route path='/' element={<SideBar />}>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/discovery" element={<div>Discovery</div>} />
-      </Route>
-
-
-
-    </Routes>
-  )
+    <main
+      style={{
+        backgroundColor: '#202222',
+      }}
+      className="h-screen w-screen"
+    >
+      <Routes>
+        <Route path="/" element={<Home />} />
+      </Routes>
+    </main>
+  );
 }
 
-export default App
+export default App;
