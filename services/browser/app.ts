@@ -1,5 +1,6 @@
 import express, { Request, Response } from 'express';
 import cors from 'cors';
+import morgan from 'morgan';
 
 import {
   launchBrowser,
@@ -11,6 +12,9 @@ import {
 import { getText } from './utils';
 
 const app = express();
+
+app.use(morgan('dev'));
+
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -23,7 +27,7 @@ launchBrowser().then(() => {
 });
 
 app.post('/', async (req: Request, res: Response) => {
-  const { url, timeout = 10, html = true, text = true } = req.body;
+  const { url, timeout = 10, html, text } = req.body;
 
   try {
     const page = await getPage(timeout);
@@ -39,10 +43,10 @@ app.post('/', async (req: Request, res: Response) => {
     const TEXT = getText(HTML);
     let response = {};
 
-    if (html) {
+    if (html === 'true') {
       response = { ...response, HTML };
     }
-    if (text) {
+    if (text === 'true') {
       response = { ...response, TEXT };
     }
 
