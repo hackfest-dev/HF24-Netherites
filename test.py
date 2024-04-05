@@ -15,9 +15,12 @@ with open('output.txt', 'r', encoding='utf-8') as file:
     print(time.time() - t)
 
     url2="http://localhost:5001/generate_response"
+
+ 
     json_data2 = json.dumps({
         "prompt":'summarize this',
-        "context":response.json()
+        "context":response.json(),
+        
     })
 
     response2 = requests.post(url2, json=json_data2)
