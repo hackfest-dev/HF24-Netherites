@@ -1,6 +1,6 @@
 import json
 from flask import Flask, jsonify,request
-from chat import get_response
+from chat import get_response_from_llm
 
 app = Flask(__name__)
 
@@ -10,8 +10,8 @@ def generate_response():
     prompt=data['prompt']
     context = data['context']
     
-    response = get_response(context,prompt)
-    print(response)
+    response = get_response_from_llm(context,prompt)
+    # print(response)
     return response
 if __name__ == '__main__':
     app.run(debug=True, port=5001)
