@@ -8,13 +8,11 @@ import { MyProvider } from '../src/pages/utils/SideBarContext.tsx';
 import { ThemeProvider } from './components/theme-povider.tsx';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
-    <MyProvider>
-      <BrowserRouter>
-        <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-          <App />
-        </ThemeProvider>
-      </BrowserRouter>
-    </MyProvider>
-  </React.StrictMode>
+  <MyProvider>
+    <BrowserRouter>
+      <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+        <App />
+      </ThemeProvider>
+    </BrowserRouter>
+  </MyProvider>
 );

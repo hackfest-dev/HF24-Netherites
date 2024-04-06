@@ -75,6 +75,7 @@ const ListItem: React.FC<Component> = ({ title, href, description }) => {
 
 const Search: React.FC = () => {
   const [showList, setShowList] = useState(false);
+
   const filterRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate()
   const handleClickOutside = (event: MouseEvent) => {
@@ -84,6 +85,7 @@ const Search: React.FC = () => {
   };
   const [promptValue, setPromptValue] = useState('');
 
+
   console.log(promptValue)
   useEffect(() => {
     window.addEventListener('click', handleClickOutside);
@@ -92,29 +94,6 @@ const Search: React.FC = () => {
     };
   }, []);
 
-  const handlePrompt = useCallback(async () => {
-    try {
-      const options = {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json', // You can adjust the content type as needed
-        },
-
-      };
-
-      const response = await fetch(`http://localhost:8080/generate?prompt=${promptValue}`, options);
-
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-
-      const responseData = await response.json();
-      console.log(responseData)
-      return responseData;
-    } catch (error) {
-      throw error;
-    }
-  }, []);
 
   const toggleList = () => {
     setShowList(!showList);
@@ -169,10 +148,10 @@ const Search: React.FC = () => {
                   )}
                 </div>
                 <div className="px-3 py-2 max-w-fit rounded-full flex items-center justify-between cursor-pointer text-white/80 roboto-regular hover:bg-white/10" onClick={() => {
-                  () => {
-                    handlePrompt();
-                    navigate('/search/id:')
-                  }
+                  localStorage.setItem("prompt", promptValue)
+                  // handlePrompt();
+                  navigate('/search/id:')
+
                 }}>
                   <FaArrowRight />
                 </div>
