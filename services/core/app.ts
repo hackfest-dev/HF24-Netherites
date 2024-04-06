@@ -122,7 +122,7 @@ app.get('/generate', async (req, res) => {
       favicon: string;
     }[] = [];
 
-    data.forEach((result: any) => {
+    data?.forEach((result: any) => {
       sources.push({
         title: result?.title,
         description: result?.description,
