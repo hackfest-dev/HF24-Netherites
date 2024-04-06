@@ -2,6 +2,8 @@ import axios from 'axios';
 import express from 'express';
 import cors from 'cors';
 
+import { manager, invoke_tools } from './manager';
+
 const BROWSER_BASE_URL = 'http://localhost:3000';
 const GOOGLE_BASE_URL = 'http://localhost:5000';
 const RAG_BASE_URL = 'http://localhost:5002';
@@ -181,6 +183,34 @@ app.get('/generate', async (req, res) => {
   } catch (error) {
     console.log('Some error in process ', error);
     res.status(500).json({ message: 'Error occured', error });
+  }
+});
+
+app.get('/autonomous', async (req, res) => {
+  try {
+    let prompt = req.query?.prompt;
+
+    if (!prompt) {
+      throw new Error('Prompt is required');
+    }
+
+    // @ts-ignore
+    let tools = await manager(prompt);
+
+    console.log('got tools:', tools);
+
+    // @ts-ignore
+    let responses = await invoke_tools(tools, prompt);
+
+    res.json({
+      responses,
+    });
+  } catch (error) {
+    console.log('Some error in process ', error);
+    res.json({
+      response: 'Something went wrong. Please try again.',
+      sources: [],
+    });
   }
 });
 
