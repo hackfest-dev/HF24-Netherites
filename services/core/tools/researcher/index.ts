@@ -7,10 +7,9 @@ const LLM_BASE_URL = 'http://localhost:5001';
 
 import template from './template';
 
-export default async function researcher(
-  user_prompt: string,
-  research_context: string
-) {
+import { extractJSON } from '../../utils';
+
+async function researcher(user_prompt: string, research_context: string) {
   try {
     let response = await axios({
       method: 'post',
@@ -28,6 +27,10 @@ export default async function researcher(
     let data = response.data;
     const google_query = data.prompt;
     console.log('google query generated:', google_query);
+
+    if (!google_query) {
+      throw new Error('Google query not generated');
+    }
 
     response = await axios({
       method: 'post',
@@ -138,7 +141,7 @@ export default async function researcher(
       method: 'post',
       url: `${LLM_BASE_URL}/generate_response`,
       data: {
-        prompt: prompt,
+        prompt: user_prompt,
         schema: `{"answer": { "type": "str", "value":"answer goes here"  } }`,
         context: context,
       },
@@ -164,3 +167,5 @@ export default async function researcher(
     throw error;
   }
 }
+
+export default researcher;

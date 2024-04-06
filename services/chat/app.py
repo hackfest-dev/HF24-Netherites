@@ -26,6 +26,8 @@ def generate_response():
             t = str 
         elif (schema[key]['type'] == 'int'):
             t = int
+        elif (schema[key]['type'] == 'list'):
+            t = list
         schema_gen[key] = (t, schema[key]['value'])
     
     response = get_response(context,prompt,schema_gen)
