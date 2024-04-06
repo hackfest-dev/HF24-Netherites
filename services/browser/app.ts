@@ -35,9 +35,7 @@ app.post('/static', async (req: Request, res: Response) => {
     res.json({ html });
   } catch (e: any) {
     console.log(e);
-    res.status(500).json({
-      message: e.message,
-    });
+    res.json({ html: '' });
   }
 });
 

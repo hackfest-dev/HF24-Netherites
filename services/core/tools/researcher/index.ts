@@ -1,46 +1,33 @@
 import axios from 'axios';
-import express from 'express';
-import cors from 'cors';
 
 const BROWSER_BASE_URL = 'http://localhost:3000';
 const GOOGLE_BASE_URL = 'http://localhost:5000';
 const RAG_BASE_URL = 'http://localhost:5002';
 const LLM_BASE_URL = 'http://localhost:5001';
 
-const app = express();
+import template from './template';
 
-app.use(cors());
-app.use(express.json());
-
-import { extractJSON } from './utils';
-
-app.get('/generate', async (req, res) => {
+export default async function researcher(
+  user_prompt: string,
+  research_context: string
+) {
   try {
-    const prompt = req.query.prompt;
-
     let response = await axios({
       method: 'post',
       url: `${LLM_BASE_URL}/generate_response`,
       data: {
-        prompt: `
-        Given the following user prompt, generate a perfect google search query to search the web to answer the user prompt:
-      
-        user prompt : ${prompt}
-      `,
-        schema: `{"prompt": { "type": "str", "value":"google search prompt goes here"  } }`,
-        context: 'no context, use your known knowledge of LLM',
+        prompt: template(user_prompt, research_context),
+        schema: `{"prompt": { "type": "str", "value":"google search query based on research context and user prompt"  } }`,
+        context: 'No context, use your known knowledge of LLM',
       },
       headers: {
         'Content-Type': 'application/json',
       },
     });
 
-    let data = extractJSON(response.data);
-
-    // @ts-ignore
-    const google_query = data?.prompt || '';
-
-    console.log('google_query:', google_query);
+    let data = response.data;
+    const google_query = data.prompt;
+    console.log('google query generated:', google_query);
 
     response = await axios({
       method: 'post',
@@ -58,10 +45,9 @@ app.get('/generate', async (req, res) => {
 
     data = await response.data;
 
-    // @ts-ignore
     const results = data.results;
 
-    console.log('got results for google search');
+    console.log('google search done');
 
     const responses: {
       url: string;
@@ -114,6 +100,8 @@ app.get('/generate', async (req, res) => {
       },
     });
 
+    console.log('got results from rag');
+
     data = response.data;
 
     // @ts-ignore
@@ -124,7 +112,6 @@ app.get('/generate', async (req, res) => {
       favicon: string;
     }[] = [];
 
-    // @ts-ignore
     data?.forEach((result: any) => {
       sources.push({
         title: result?.title,
@@ -143,7 +130,6 @@ app.get('/generate', async (req, res) => {
     });
 
     context += '\n\n';
-    // @ts-ignore
     data.forEach((result: any) => {
       context += result?.text + '\n';
     });
@@ -152,11 +138,7 @@ app.get('/generate', async (req, res) => {
       method: 'post',
       url: `${LLM_BASE_URL}/generate_response`,
       data: {
-        prompt: `
-        Given the following user prompt, generate a perfect answer to the user prompt:
-      
-        user prompt : ${prompt}
-      `,
+        prompt: prompt,
         schema: `{"answer": { "type": "str", "value":"answer goes here"  } }`,
         context: context,
       },
@@ -174,21 +156,11 @@ app.get('/generate', async (req, res) => {
       answer = 'Sorry, Something went wrong. Please try again later.';
     }
 
-    res.json({
+    return {
       response: answer,
       sources,
-    });
+    };
   } catch (error) {
-    console.log('Some error in process ', error);
-    res.status(500).json({ message: 'Error occured', error });
+    throw error;
   }
-});
-
-app.listen(8080, () => {
-  console.log('API listening on port 8080');
-});
-
-process.on('uncaughtException', (err) => {
-  console.log(err);
-  // process.exit(1);
-});
+}

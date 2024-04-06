@@ -10,8 +10,8 @@ from langchain_core.pydantic_v1 import  create_model, BaseModel
 def get_response(context, prompt,schema):
     try:
         api_key = os.getenv('GOOGLE_API_KEY')
-        # llm = GoogleGenerativeAI(model="gemini-pro", google_api_key=api_key)
-        llm = ChatAnthropic(model="claude-3-sonnet-20240229", anthropic_api_key=os.getenv('ANTHROPIC_API_KEY'))
+        #llm = GoogleGenerativeAI(model="gemini-pro", google_api_key=api_key)
+        llm = ChatAnthropic(model="claude-3-opus-20240229", anthropic_api_key=os.getenv('ANTHROPIC_API_KEY'))
         pydantic_model=create_model('model',**schema,__base__=BaseModel)
 
         parser = JsonOutputParser(pydantic_object=pydantic_model)
@@ -19,7 +19,8 @@ def get_response(context, prompt,schema):
         schema_instructions = parser.get_format_instructions()
 
         prompt = """
-        Answer the user query based on or not on the context provided. Depends on the availibility of context. 
+        System: Answer the user query based on (or not) on the context provided, depends on the availibility of context. If context is provided, make sure to fully utilize it and provide the most relevant answer. If context is not provided, answer the query based on your knowledge and understanding of the query. Answer as if you are a human and you know the context already.
+
             User Query : {query}
 
             Strictly respond only in JSON format not in md and in the following format instructions -
