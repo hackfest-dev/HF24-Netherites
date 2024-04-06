@@ -35,7 +35,7 @@ export default function TrySearching() {
                 </button>
                 <button
                     type="button"
-                    className="border border-borderMain/50 dark:border-borderMainDark/50 text-textOff dark:text-textOffDark md:hover:text-textMain md:dark:hover:text-textMainDark  focus:outline-none outline-none outline-transparent transition duration-300 ease-in-out  select-none items-center relative group/button justify-center text-center items-center rounded-full cursor-point active:scale-95 origin-center whitespace-nowrap inline-flex text-xs font-medium px-sm font-medium h-6"
+                    className="border border-borderMain/50 dark:border-borderMainDark/50 text-textOff dark:text-textOffDark md:hover:text-textMain md:dark:hover:text-textMainDark  focus:outline-none outline-none outline-transparent transition duration-300 ease-in-out  select-none  relative group/button justify-center text-center items-center rounded-full cursor-point active:scale-95 origin-center whitespace-nowrap inline-flex text-xs px-sm font-medium h-6"
                 >
                     <div className="flex items-center leading-none justify-center gap-xs">
                         <div className="text-align-center relative">
@@ -45,7 +45,7 @@ export default function TrySearching() {
                 </button>
                 <button
                     type="button"
-                    className="border border-borderMain/50 dark:border-borderMainDark/50 text-textOff dark:text-textOffDark md:hover:text-textMain md:dark:hover:text-textMainDark  focus:outline-none outline-none outline-transparent transition duration-300 ease-in-out  select-none items-center relative group/button justify-center text-center items-center rounded-full cursor-point active:scale-95 origin-center whitespace-nowrap inline-flex text-xs font-medium px-sm font-medium h-6"
+                    className="border border-borderMain/50 dark:border-borderMainDark/50 text-textOff dark:text-textOffDark md:hover:text-textMain md:dark:hover:text-textMainDark  focus:outline-none outline-none outline-transparent transition duration-300 ease-in-out  select-none relative group/button justify-center text-center items-center rounded-full cursor-point active:scale-95 origin-center whitespace-nowrap inline-flex text-xs px-sm font-medium h-6"
                 >
                     <div className="flex items-center leading-none justify-center gap-xs">
                         <div className="text-align-center relative">

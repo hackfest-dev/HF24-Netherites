@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { Textarea } from '../../components/ui/textarea';
 import { GoFilter } from 'react-icons/go';
 import { FaArrowRight } from 'react-icons/fa';
@@ -11,6 +11,8 @@ import {
   TooltipTrigger,
 } from "../../components/ui/tooltip"
 import TrySearching from './TrySearching';
+import { useNavigate } from 'react-router-dom';
+
 
 interface Component {
   title: string;
@@ -74,13 +76,15 @@ const ListItem: React.FC<Component> = ({ title, href, description }) => {
 const Search: React.FC = () => {
   const [showList, setShowList] = useState(false);
   const filterRef = useRef<HTMLDivElement>(null);
-
+  const navigate = useNavigate()
   const handleClickOutside = (event: MouseEvent) => {
     if (filterRef.current && !filterRef.current.contains(event.target as Node)) {
       setShowList(false);
     }
   };
+  const [promptValue, setPromptValue] = useState('');
 
+  console.log(promptValue)
   useEffect(() => {
     window.addEventListener('click', handleClickOutside);
     return () => {
@@ -88,14 +92,42 @@ const Search: React.FC = () => {
     };
   }, []);
 
+  const handlePrompt = useCallback(async () => {
+    try {
+      const options = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json', // You can adjust the content type as needed
+        },
+
+      };
+
+      const response = await fetch(`http://localhost:8080/generate?prompt=${promptValue}`, options);
+
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+
+      const responseData = await response.json();
+      console.log(responseData)
+      return responseData;
+    } catch (error) {
+      throw error;
+    }
+  }, []);
+
   const toggleList = () => {
     setShowList(!showList);
   };
 
+  const handleChange = (event: any) => {
+    setPromptValue(event.target.value);
+  };
+
   return (
     <>
-      <div className="py-4 h-full w-full relative">
-        <div className="w-full h-full bg-vcharBlack rounded-lg border-1 border-gray-100 flex items-center justify-center">
+      <div className="py-4 h-full w-full">
+        <div className="h-full w-full bg-vcharBlack rounded-lg border-1 border-gray-100 flex items-center justify-center">
           <div className="-translate-y-1/5  w-full flex items-center justify-center flex-col">
             <div className="noto-sans text-4xl">Let's dive deeper</div>
             <div className="mt-10 border border-e border-gray-500/20 rounded py-2 px-4 w-3/6" style={{ backgroundColor: '#202222' }}>
@@ -103,12 +135,12 @@ const Search: React.FC = () => {
                 style={{ background: 'transparent' }}
                 placeholder="Search for anything about stocks, companies or markets..."
                 className="text-md noto-sans resize-none"
+                onChange={handleChange}
                 rows={1}
               />
 
               <div className="w-full flex items-center justify-between">
                 <div>
-
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger>
@@ -136,7 +168,12 @@ const Search: React.FC = () => {
                     </div>
                   )}
                 </div>
-                <div className="px-3 py-2 max-w-fit rounded-full flex items-center justify-between cursor-pointer text-white/80 roboto-regular hover:bg-white/10">
+                <div className="px-3 py-2 max-w-fit rounded-full flex items-center justify-between cursor-pointer text-white/80 roboto-regular hover:bg-white/10" onClick={() => {
+                  () => {
+                    handlePrompt();
+                    navigate('/search/id:')
+                  }
+                }}>
                   <FaArrowRight />
                 </div>
               </div>

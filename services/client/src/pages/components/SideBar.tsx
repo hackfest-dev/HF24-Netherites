@@ -9,19 +9,71 @@ import {
 import { FiGithub } from 'react-icons/fi';
 import { LuArrowLeftToLine } from "react-icons/lu";
 import { LuArrowRightToLine } from "react-icons/lu";
+import { IoSearch } from "react-icons/io5";
+import { FaRegCompass } from "react-icons/fa6";
+import { MdOutlineLibraryBooks } from "react-icons/md";
+import { PiSignInBold } from "react-icons/pi";
+import { FaCirclePlus } from "react-icons/fa6";
+import { useNavigate } from 'react-router-dom';
+
 
 //@ts-ignore
 function SideBar({ setisCollapsed, isCollapsed }) {
+  const navigate = useNavigate()
   return (
+
 
     isCollapsed ? (<div className="flex flex-col items-center justify-between py-6 h-screen">
       <div className="flex flex-col w-full items-center justify-center">
         <div className="flex items-center justify-center">
-          <img src="/logo.png" className="h-8 inline mr-2" />
+          <img src="/logo.png" className="h-8 inline mr-1" />
         </div>
-        <div className=" mt-7 w-full flex items-center justify-center">
+        <div className=" mt-7 w-full flex items-center justify-center  hover:bg-white/10">
+          <Button
+            className="space-grotesk text-lg w-3/4 h-11 flex items-center justify-center  text-gray-400 bg-transparent pointer-events-none">
+            <div className='pt-1'><FaCirclePlus className='w-6 h-6' /></div>
+          </Button>
+        </div>
+        <div onClick={() => { navigate('/') }} className=" mt-5 w-full flex items-center justify-center  hover:bg-white/10">
+          <Button
+            className="space-grotesk text-lg w-3/4 h-11 flex items-center justify-center  text-gray-400 bg-transparent pointer-events-none"
+          >
+            <div className='flex flex-row space-x-2'>
+              <div className='pt-1'><IoSearch className='w-6 h-6' /></div>
+            </div>
 
+          </Button>
         </div>
+        <div className=" mt-1 w-full flex items-center justify-center  hover:bg-white/10">
+          <Button
+            className="space-grotesk  text-lg w-3/4 h-11 flex items-center justify-center text-gray-400 bg-transparent pointer-events-none"
+          >
+            <div className='flex flex-row  space-x-2'>
+              <div className='pt-1'><FaRegCompass className='w-6 h-6' /></div>
+
+            </div>
+          </Button>
+        </div>
+        <div className=" mt-1 w-full flex items-center justify-center  hover:bg-white/10">
+          <Button
+            className="space-grotesk  text-lg w-3/4 h-11 flex items-center  justify-center text-gray-400 bg-transparent pointer-events-none"
+          >
+            <div className='flex flex-row space-x-2'>
+              <div className='pt-1'><MdOutlineLibraryBooks className='w-6 h-6' /></div>
+
+            </div>
+          </Button>
+        </div>
+        <div className=" mt-1 w-full flex items-center justify-center  hover:bg-white/10">
+          <Button
+            className="space-grotesk  text-lg w-3/4 h-11 flex items-center justify-center text-gray-400 bg-transparent pointer-events-none"
+          >
+            <div className='flex flex-row space-x-2'>
+              <div className='pt-1'><PiSignInBold className='w-6 h-6' /></div>
+            </div>
+          </Button>
+        </div>
+
       </div>
       <TooltipProvider>
         <Tooltip>
@@ -41,12 +93,13 @@ function SideBar({ setisCollapsed, isCollapsed }) {
       </TooltipProvider>
 
     </div>) : (
+
       <div className="flex flex-col items-center justify-between py-6 h-screen">
+
         <div className="flex flex-col w-full items-center justify-center">
           <div className="flex items-center justify-center">
             <img src="/logo.png" className="h-8 inline mr-2" />
             <div className="noto-sans inline-block text-2xl">vChar</div>
-
             <div className='pl-2 pt-1'>
               <TooltipProvider>
                 <Tooltip>
@@ -74,15 +127,64 @@ function SideBar({ setisCollapsed, isCollapsed }) {
               New Thread
             </Button>
           </div>
+          <div onClick={() => { navigate('/') }} className=" mt-5 w-full flex items-center justify-center  hover:bg-white/10">
+            <Button
+
+              className="space-grotesk text-lg w-3/4 h-11 flex items-center justify-start  text-gray-400 bg-transparent pointer-events-none"
+            >
+              <div className='flex flex-row space-x-2' >
+                <div className='pt-1'><IoSearch /></div>
+                <div>Home</div>
+              </div>
+
+            </Button>
+          </div>
+          <div className=" mt-1 w-full flex items-center justify-center  hover:bg-white/10">
+            <Button
+              className="space-grotesk  text-lg w-3/4 h-11 flex items-center justify-start text-gray-400 bg-transparent pointer-events-none"
+            >
+              <div className='flex flex-row  space-x-2'>
+                <div className='pt-1'><FaRegCompass /></div>
+                <div>Discover</div>
+              </div>
+            </Button>
+          </div>
+          <div className=" mt-1 w-full flex items-center justify-center  hover:bg-white/10">
+            <Button
+              className="space-grotesk  text-lg w-3/4 h-11 flex items-center  justify-start text-gray-400 bg-transparent pointer-events-none"
+            >
+              <div className='flex flex-row space-x-2'>
+                <div className='pt-1'><MdOutlineLibraryBooks /></div>
+                <div>Library</div>
+              </div>
+            </Button>
+          </div>
+          <div className=" mt-1 w-full flex items-center justify-center  hover:bg-white/10">
+            <Button
+              className="space-grotesk  text-lg w-3/4 h-11 flex items-center justify-start text-gray-400 bg-transparent pointer-events-none"
+            >
+              <div className='flex flex-row space-x-2'>
+                <div className='pt-1'><PiSignInBold /></div>
+                <div>Sign in</div>
+              </div>
+            </Button>
+          </div>
+          <div className=" mt-7 w-full flex items-center justify-center">
+            <Button
+              className="space-grotesk  rounded-full text-lg w-3/4 h-11 flex items-center justify-center border-gray-500 "
+            >
+              Sign Up
+            </Button>
+          </div>
         </div>
 
         <a href="https://github.com/hackfest-dev/HF24-Netherites">
           <FiGithub size="25" className="hover:text-purple cursor-pointer" />
         </a>
+
       </div>
+
     )
-
-
 
   );
 }
