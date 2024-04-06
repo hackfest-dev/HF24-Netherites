@@ -5,22 +5,19 @@ from langchain_community.vectorstores import FAISS
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain_text_splitters import CharacterTextSplitter
 from langchain.schema import Document
-from langchain_google_genai import GoogleVectorStore
 
 
 def getRag(query, context):
     try:
         # print(query,context)
-
+        
         documents = [Document(page_content=ctx['text'],metadata={
-            'source': ctx['url']
+            'url': ctx['url'],
+            'title': ctx['title'],
+            'description': ctx['description'],
+            'favicon': ctx['favicon'],
         }) for ctx in context]
-        # GV = GoogleVectorStore(google_api_key=os.getenv('GOOGLE_API_KEY'), corpus_id='corpus')
-        # store = GV.create_corpus(corpus_id='corpus', display_name='corpus')
-        # store.add_documents(documents)
 
-        # temp = store.as_retriever().get_relevant_documents(query)        
-        # print("TEMP",temp)
         text_splitter = CharacterTextSplitter(chunk_size=1000, chunk_overlap=150)
         docs = text_splitter.split_documents(documents)
         print('texts done')
@@ -32,7 +29,11 @@ def getRag(query, context):
    
         return [{
             'text': d.page_content,
-            'url': d.metadata['source']
+            'url': d.metadata['url'],
+            'title': d.metadata['title'],
+            'description': d.metadata['description'],
+            'favicon': d.metadata['favicon'],
+
         } for d in docs]
 
 

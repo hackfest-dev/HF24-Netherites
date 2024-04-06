@@ -64,6 +64,9 @@ app.get('/generate', async (req, res) => {
     const responses: {
       url: string;
       text: string;
+      favicon: string;
+      description: string;
+      title: string;
     }[] = [];
 
     const promises: Promise<any>[] = [];
@@ -85,6 +88,9 @@ app.get('/generate', async (req, res) => {
             responses.push({
               text: data.TEXT,
               url: results[i]?.url,
+              favicon: results[i]?.favicons.high_res,
+              description: results[i]?.description,
+              title: results[i]?.title,
             });
           })
           .catch((error: any) => console.log('error', error))
@@ -109,8 +115,21 @@ app.get('/generate', async (req, res) => {
     data = response.data;
 
     // @ts-ignore
-    let sources = data.map((d) => d.url);
-    sources = [...new Set(sources)];
+    let sources: {
+      title: string;
+      description: string;
+      url: string;
+      favicon: string;
+    }[] = [];
+
+    data.forEach((result: any) => {
+      sources.push({
+        title: result?.title,
+        description: result?.description,
+        url: result?.url,
+        favicon: result?.favicon,
+      });
+    });
 
     let context = '';
 
@@ -156,7 +175,7 @@ app.get('/generate', async (req, res) => {
       sources,
     });
   } catch (error) {
-    console.log('Some error in process ');
+    console.log('Some error in process ', error);
     res.status(500).json({ message: 'Error occured', error });
   }
 });

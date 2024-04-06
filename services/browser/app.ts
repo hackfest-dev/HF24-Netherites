@@ -26,6 +26,21 @@ launchBrowser().then(() => {
   });
 });
 
+app.post('/static', async (req: Request, res: Response) => {
+  const { url } = req.body;
+
+  try {
+    const response = await fetch(url);
+    const html = await response.text();
+    res.json({ html });
+  } catch (e: any) {
+    console.log(e);
+    res.status(500).json({
+      message: e.message,
+    });
+  }
+});
+
 app.post('/', async (req: Request, res: Response) => {
   const { url, timeout = 10, html, text } = req.body;
 

@@ -16,12 +16,18 @@ def get_documents():
         try:
             text = ctx['text'] 
             url = ctx['url']
-            context_filtered.append({'text': text, 'url': url})
+            title = ctx['title']
+            description = ctx['description']
+            favicon = ctx['favicon']
+            context_filtered.append({'text': text, 'url': url, 
+                                        'title': title, 'description': description, 'favicon': favicon
+                                     })
         except:
             pass
 
     # print(context)
     docs = getRag(query, context_filtered)
+
   
     return jsonify(docs)
 

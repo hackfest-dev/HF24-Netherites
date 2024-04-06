@@ -12,12 +12,16 @@
   "license": "ISC",
   "dependencies": {
     "axios": "^1.6.8",
+    "cheerio": "^1.0.0-rc.12",
     "cors": "^2.8.5",
     "express": "^4.19.2"
   },
   "devDependencies": {
+    "@types/cheerio": "^0.22.35",
     "@types/cors": "~2.8.17",
     "@types/express": "~4.17.21",
+    "@types/jsdom": "~21.1.6",
+    "@types/nodemon": "~1.19.6",
     "nodemon": "^3.1.0"
   }
 }
