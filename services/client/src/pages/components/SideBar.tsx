@@ -26,9 +26,12 @@ function SideBar({ setisCollapsed, isCollapsed }) {
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger>
-            <LuArrowRightToLine className="w-6 h-6 hover:text-purple cursor-pointer" onClick={() => {
+            <div onClick={() => {
               setisCollapsed(false)
-            }} />
+            }} className="px-3 py-2 max-w-fit rounded-full flex items-center justify-between cursor-pointer text-white/80 roboto-regular hover:bg-white/10">
+              <LuArrowRightToLine className="w-6 h-6 " />
+            </div>
+
 
           </TooltipTrigger>
           <TooltipContent>
@@ -44,19 +47,23 @@ function SideBar({ setisCollapsed, isCollapsed }) {
             <img src="/logo.png" className="h-8 inline mr-2" />
             <div className="noto-sans inline-block text-2xl">vChar</div>
 
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger>
-                  <div className='pl-6 pt-1' > <LuArrowLeftToLine className="w-6 h-6 hover:text-purple cursor-pointer" onClick={() => {
-                    setisCollapsed(true)
-                  }} /></div>
+            <div className='pl-2 pt-1'>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger>
+                    <div onClick={() => {
+                      setisCollapsed(true)
+                    }} className="px-3 py-2 max-w-fit rounded-full flex items-center justify-between cursor-pointer text-white/80 roboto-regular hover:bg-white/10">
+                      <LuArrowLeftToLine className="w-5 h-" />
+                    </div>
 
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Collapse</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Collapse</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider></div>
+
 
           </div>
           <div className=" mt-7 w-full flex items-center justify-center">
