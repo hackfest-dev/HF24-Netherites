@@ -12,6 +12,8 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+import { extractJSON } from './utils';
+
 app.get('/generate', async (req, res) => {
   try {
     const prompt = req.query.prompt;
@@ -140,8 +142,17 @@ app.get('/generate', async (req, res) => {
       },
     });
 
+    //@ts-ignore
+    let answer = extractJSON(response.data)?.answer;
+
+    console.log('got answer, sanitizing');
+
+    if (!answer) {
+      answer = 'Sorry, Something went wrong. Please try again later.';
+    }
+
     res.json({
-      response: response.data?.answer,
+      response: answer,
       sources,
     });
   } catch (error) {
