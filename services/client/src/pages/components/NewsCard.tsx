@@ -5,29 +5,30 @@ import {
     CardTitle,
 } from "../../components/ui/card";
 
-import image from "../../lib/tesla-robotaxi.jpg";
 
 //@ts-ignore
 export function NewsCard({ news, index }) {
     return (
-        <Card style={{ height: '120px', overflow: 'hidden', width: '700px' }}>
-            <div className="flex flex-row items-center"> {/* Updated to add items-center for vertical alignment */}
-                <div className="w-20 h-20 mx-auto"> {/* Adjusted margin for spacing */}
+        <Card style={{ height: '150px', overflow: 'hidden', width: '700px' }} className="hover:border-purple">
+            <div className="flex flex-row p-4 items-center">
+                <div className="flex p-5" style={{ width: '120px', height: '120px' }}>
+
                     <img
-                        src={image}
+                        src={news?.favicons?.high_res}
                         className="w-full h-full object-contain"
                         alt="News Image"
+                        style={{ minWidth: '100%', minHeight: '100%' }}
                     />
+
                 </div>
-                <div className="flex flex-col flex-grow"> {/* Adjusted layout to allow flex-grow for the description */}
-                    <CardHeader className="grid grid-cols-[1fr_110px] items-start gap-4 space-y-0">
-                        <div className="flex flex-col space-y-1">
-                            <CardTitle>{news.headline}</CardTitle>
-                            <CardDescription>
-                                {news.description}
-                            </CardDescription>
-                        </div>
-                    </CardHeader>
+                <div className="flex flex-col flex-grow">
+                    <div className="flex flex-col space-y-3   cursor-pointer">
+                        <CardTitle className="hover:text-purple hover:underline"><a href={news?.url}>{news?.title}</a></CardTitle>
+                        <CardDescription>
+                            {news?.description}
+                        </CardDescription>
+                    </div>
+
                 </div>
             </div>
         </Card>
