@@ -1,7 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Card } from '../../components/ui/card';
 
+import {} from '../../App';
+
 function truncateText(text, maxLength) {
-  if (text.length <= maxLength) {
+  if (text && text?.length <= maxLength) {
     return text;
   }
   return text.substring(0, maxLength) + '...';
@@ -43,10 +46,10 @@ function Answer({
                 <a href={source.url}>
                   <div>
                     <div className="text-md noto-sans ">
-                      {truncateText(source.title, 50)}
+                      {truncateText(source?.title, 50)}
                     </div>
                     <div className="text-xs text-wrap hover:text-white">
-                      {truncateText(source.description, 100)}
+                      {truncateText(source?.description, 100)}
                       {/*<p>{truncateText(source.url, 50)}</p>*/}
                     </div>
                   </div>

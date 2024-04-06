@@ -3,7 +3,7 @@ import OutputContainer from './components/OutputContainer';
 
 function SearchPage() {
   //@ts-ignore
-  const { isCollapsed, setisCollapsed } = useMyContext();
+  const { isCollapsed } = useMyContext();
   return (
     <div
       style={{

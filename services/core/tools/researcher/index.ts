@@ -115,14 +115,16 @@ async function researcher(user_prompt: string, research_context: string) {
       favicon: string;
     }[] = [];
 
-    data?.forEach((result: any) => {
-      sources.push({
-        title: result?.title,
-        description: result?.description,
-        url: result?.url,
-        favicon: result?.favicon,
+    if (typeof data === 'object') {
+      data?.forEach((result: any) => {
+        sources.push({
+          title: result?.title,
+          description: result?.description,
+          url: result?.url,
+          favicon: result?.favicon,
+        });
       });
-    });
+    }
 
     let context = '';
 

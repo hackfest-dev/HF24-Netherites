@@ -1,6 +1,19 @@
 import { Server, Socket } from 'socket.io';
 import { DefaultEventsMap } from 'socket.io/dist/typed-events';
 
+let ioInstance: Server<
+  DefaultEventsMap,
+  DefaultEventsMap,
+  DefaultEventsMap,
+  any
+>;
+
+export const initializeSocketIO = (
+  io: Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>
+) => {
+  ioInstance = io;
+};
+
 export const ioConfig = (
   io: Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>
 ) => {
@@ -8,12 +21,4 @@ export const ioConfig = (
     console.log(`User Connected:${socket.id}`);
     console.log('connected to main room');
   });
-  // const search = io.of('/search');
-  // search.on('connection', (socket: Socket) => {
-  //   console.log('Connected to search room');
-  // });
-
-  // io.on('disconnect', (socket: Socket) => {
-  //   console.log('disconnected from main room');
-  // });
 };

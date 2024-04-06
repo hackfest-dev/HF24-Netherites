@@ -4,6 +4,7 @@ import { extractJSON } from './utils';
 
 import GenericResearch from './tools/generic_research';
 import Tool from './tools/tool';
+import { emit } from './app';
 
 const LLM_BASE_URL = 'http://localhost:5001';
 
@@ -87,6 +88,10 @@ const invoke_tools = async (tools: string[], user_prompt: string) => {
     if (TOOL_MAP[tool]) {
       promises.push(
         TOOL_MAP[tool].invoke(user_prompt).then((response) => {
+          emit('tool_response', {
+            tool: tool,
+            ...response,
+          });
           responses.push(response);
         })
       );

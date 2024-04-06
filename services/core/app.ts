@@ -1,6 +1,8 @@
 import axios from 'axios';
 import express from 'express';
 import cors from 'cors';
+import http from 'http';
+import { Server } from 'socket.io';
 
 import { manager, invoke_tools } from './manager';
 
@@ -15,6 +17,7 @@ app.use(cors());
 app.use(express.json());
 
 import { extractJSON } from './utils';
+import { ioConfig } from './socket';
 
 app.get('/generate', async (req, res) => {
   try {
@@ -214,8 +217,32 @@ app.get('/autonomous', async (req, res) => {
   }
 });
 
-app.listen(8080, () => {
-  console.log('API listening on port 8080');
+const server = http.createServer(app);
+
+const io = new Server(server, {
+  path: '',
+  cors: {
+    origin: '*',
+    methods: ['GET', 'POST', 'DELETE', 'PATCH', 'PUT'],
+    allowedHeaders: ['Authorization'],
+  },
+  cleanupEmptyChildNamespaces: true,
+});
+
+ioConfig(io);
+
+export const emit = (eventName: string, data: any) => {
+  if (io) {
+    io.emit(eventName, data);
+  } else {
+    console.error(
+      'Socket.IO is not initialized. Make sure to call initializeSocketIO with the Server instance.'
+    );
+  }
+};
+
+server.listen(8080, () => {
+  console.log('Server is running on port 8080');
 });
 
 process.on('uncaughtException', (err) => {
