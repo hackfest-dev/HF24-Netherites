@@ -1,19 +1,24 @@
 import SideBar from './components/SideBar';
 import Search from './components/Search';
+import { useState } from 'react';
 
 function Home() {
+  const [isCollapsed, setisCollapsed] = useState(false)
   return (
     <div className="flex w-full">
       <div
         style={{
-          width: '10.5%',
+          width: isCollapsed ? '5%' : '12%',
+          transition: 'width 0.2s ease-in-out',
         }}
       >
-        <SideBar />
+
+        <SideBar setisCollapsed={setisCollapsed} isCollapsed={isCollapsed} />
       </div>
       <div
         style={{
-          width: '88.5%',
+          width: isCollapsed ? '94%' : '87%',
+          transition: 'width 0.2s ease-in-out',
         }}
       >
         <Search />
