@@ -13,9 +13,9 @@ function App() {
       className="h-screen w-screen"
     >
       <Routes>
-        <Route path="/" element={<Layout />} >
+        <Route path="/" element={<Layout />}>
           <Route path="/" element={<Home />} />
-          <Route path="/search/id:" element={<SearchPage />} />
+          <Route path="/search" element={<SearchPage />} />
         </Route>
       </Routes>
     </main>
