@@ -12,6 +12,8 @@ def getAnanlysis():
     data = request.json
 
     company_name = data['company_name']
+
+    
     return 0
 if __name__ == '__main__':
     app.run(debug=True, port=5001)
