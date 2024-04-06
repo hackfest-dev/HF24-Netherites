@@ -1,5 +1,5 @@
 import axios from 'axios';
-import express, { text } from 'express';
+import express from 'express';
 import cors from 'cors';
 
 const BROWSER_BASE_URL = 'http://localhost:3000';
@@ -12,77 +12,153 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.get('/generate', async (req, res) => {
-  const prompt = req.query.prompt;
+import { extractJSON } from './utils';
 
-  let response = await axios({
-    method: 'post',
-    url: `${LLM_BASE_URL}/generate_response`,
-    data: {
-      prompt: `
+app.get('/generate', async (req, res) => {
+  try {
+    const prompt = req.query.prompt;
+
+    let response = await axios({
+      method: 'post',
+      url: `${LLM_BASE_URL}/generate_response`,
+      data: {
+        prompt: `
         Given the following user prompt, generate a perfect google search query to search the web to answer the user prompt:
       
         user prompt : ${prompt}
       `,
-      schema: `{"prompt": { "type": "str", "value":"google search prompt goes here"  } }`,
-      context: 'no context, use your known knowledge of LLM',
-    },
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
-
-  let data = response.data;
-
-  const google_query = data.prompt;
-
-  console.log('google_query:', google_query);
-
-  response = await axios({
-    method: 'post',
-    url: `${GOOGLE_BASE_URL}/search?q=${google_query}`,
-    data: {
-      options: {
-        safe: true,
-        params: {},
+        schema: `{"prompt": { "type": "str", "value":"google search prompt goes here"  } }`,
+        context: 'no context, use your known knowledge of LLM',
       },
-    },
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
 
-  data = response.data;
+    let data = response.data;
 
-  const results = data.results;
+    const google_query = data.prompt;
 
-  console.log('got results:');
+    console.log('google_query:', google_query);
 
-  const promises: Promise<any>[] = [];
-  let responses: string[] = [];
-  for (let i = 0; i < results.length; i++) {
-    promises.push(
-      fetch('http://localhost:3000/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+    response = await axios({
+      method: 'post',
+      url: `${GOOGLE_BASE_URL}/search?q=${google_query}`,
+      data: {
+        options: {
+          safe: true,
+          params: {},
         },
-        body: JSON.stringify({
-          url: results[i]?.url,
-          text: 'true',
-        }),
-      })
-        .then((response: Response) => response.json())
-        .then((data) => {
-          responses.push(data.TEXT);
+      },
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    data = await response.data;
+
+    const results = data.results;
+
+    console.log('got results for google search');
+
+    const responses: {
+      url: string;
+      text: string;
+    }[] = [];
+
+    const promises: Promise<any>[] = [];
+    for (let i = 0; i < results.length; i++) {
+      promises.push(
+        fetch(BROWSER_BASE_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            url: results[i]?.url,
+            text: 'true',
+            timeout: 6,
+          }),
         })
-        .catch((error: any) => console.log('error', error))
-    );
+          .then((response: Response) => response.json())
+          .then((data) => {
+            responses.push({
+              text: data.TEXT,
+              url: results[i]?.url,
+            });
+          })
+          .catch((error: any) => console.log('error', error))
+      );
+    }
+
+    await Promise.all(promises);
+    console.log('browser response done');
+
+    response = await axios({
+      url: `${RAG_BASE_URL}/get_documents`,
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      data: {
+        query: google_query,
+        context: responses,
+      },
+    });
+
+    data = response.data;
+
+    // @ts-ignore
+    let sources = data.map((d) => d.url);
+    sources = [...new Set(sources)];
+
+    let context = '';
+
+    context += results?.knowledge_panel?.description + '\n';
+    results.forEach((result: any) => {
+      context += result?.title + '\n';
+      context += result?.description + '\n';
+    });
+
+    context += '\n\n';
+    data.forEach((result: any) => {
+      context += result?.text + '\n';
+    });
+
+    response = await axios({
+      method: 'post',
+      url: `${LLM_BASE_URL}/generate_response`,
+      data: {
+        prompt: `
+        Given the following user prompt, generate a perfect answer to the user prompt:
+      
+        user prompt : ${prompt}
+      `,
+        schema: `{"answer": { "type": "str", "value":"answer goes here"  } }`,
+        context: context,
+      },
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    //@ts-ignore
+    let answer = extractJSON(response.data)?.answer;
+
+    console.log('got answer, sanitizing');
+
+    if (!answer) {
+      answer = 'Sorry, Something went wrong. Please try again later.';
+    }
+
+    res.json({
+      response: answer,
+      sources,
+    });
+  } catch (error) {
+    console.log('Some error in process ');
+    res.status(500).json({ message: 'Error occured', error });
   }
-
-  await Promise.all(promises);
-
-  res.json(responses);
 });
 
 app.listen(8080, () => {
