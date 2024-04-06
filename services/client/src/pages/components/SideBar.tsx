@@ -12,7 +12,6 @@ import { LuArrowRightToLine } from 'react-icons/lu';
 import { IoSearch } from 'react-icons/io5';
 import { FaRegCompass } from 'react-icons/fa6';
 import { MdOutlineLibraryBooks } from 'react-icons/md';
-import { PiSignInBold } from 'react-icons/pi';
 import { FaCirclePlus } from 'react-icons/fa6';
 import { useNavigate } from 'react-router-dom';
 
@@ -46,7 +45,9 @@ function SideBar({ setisCollapsed, isCollapsed }) {
             </div>
           </Button>
         </div>
-        <div className=" mt-1 w-full flex items-center justify-center  hover:bg-white/10">
+        <div onClick={() => {
+          navigate('/discover');
+        }} className=" mt-1 w-full flex items-center justify-center  hover:bg-white/10">
           <Button className="space-grotesk  text-lg w-3/4 h-11 flex items-center justify-center text-gray-400 bg-transparent pointer-events-none">
             <div className="flex flex-row  space-x-2">
               <div className="pt-1">
@@ -133,7 +134,9 @@ function SideBar({ setisCollapsed, isCollapsed }) {
               </div>
             </Button>
           </div>
-          <div className=" mt-1 w-full flex items-center justify-start  hover:bg-white/10">
+          <div onClick={() => {
+            navigate('/discover');
+          }} className=" mt-1 w-full flex items-center justify-start  hover:bg-white/10">
             <Button className="space-grotesk  text-lg w-3/4 h-11 flex items-center justify-start text-gray-400 bg-transparent pointer-events-none">
               <div className="flex flex-row  space-x-2">
                 <div className="pt-1">
