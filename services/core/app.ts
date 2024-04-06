@@ -57,6 +57,8 @@ app.get('/generate', async (req, res) => {
 
     const results = data.results;
 
+    console.log('got results for google search');
+
     const responses: {
       url: string;
       text: string;
@@ -88,39 +90,7 @@ app.get('/generate', async (req, res) => {
     }
 
     await Promise.all(promises);
-    console.log('Now RAG');
-    // const ragPromises: Promise<any>[] = [];
-    // for (let i = 0; i < results.length; i++) {
-    //   console.log(i);
-
-    //   await fetch(`${RAG_BASE_URL}/get_documents`, {
-    //     method: 'POST',
-    //     headers: {
-    //       'Content-Type': 'application/json',
-    //     },
-    //     body: JSON.stringify({
-    //       query: google_query,
-    //       context: results[i].text,
-    //     }),
-    //   })
-    //     .then((response: Response) => {
-    //       console.log('responsee');
-    //       console.log(response);
-    //       response.json();
-    //     })
-    //     .then((data) => {
-    //       console.log(data);
-    //     })
-    //     .catch(() => console.log('error'));
-    // }
-    // console.log('started');
-    // Promise.all(ragPromises)
-    //   .then(() => {
-    //     console.log('done');
-    //   })
-    //   .catch(() => {
-    //     console.log('not done');
-    //   });
+    console.log('browser response done');
 
     response = await axios({
       url: `${RAG_BASE_URL}/get_documents`,
@@ -136,7 +106,44 @@ app.get('/generate', async (req, res) => {
 
     data = response.data;
 
-    res.json(data);
+    // @ts-ignore
+    let sources = data.map((d) => d.url);
+    sources = [...new Set(sources)];
+
+    let context = '';
+
+    context += results?.knowledge_panel?.description + '\n';
+    results.forEach((result: any) => {
+      context += result?.title + '\n';
+      context += result?.description + '\n';
+    });
+
+    context += '\n\n';
+    data.forEach((result: any) => {
+      context += result?.text + '\n';
+    });
+
+    response = await axios({
+      method: 'post',
+      url: `${LLM_BASE_URL}/generate_response`,
+      data: {
+        prompt: `
+        Given the following user prompt, generate a perfect answer to the user prompt:
+      
+        user prompt : ${prompt}
+      `,
+        schema: `{"answer": { "type": "str", "value":"answer goes here"  } }`,
+        context: context,
+      },
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    res.json({
+      response: response.data?.answer,
+      sources,
+    });
   } catch (error) {
     console.log('Some error in process ');
     res.status(500).json({ message: 'Error occured', error });

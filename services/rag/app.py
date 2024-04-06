@@ -10,18 +10,20 @@ def get_documents():
     context = data['context']
     query = data['query']
 
-    combined_text = ""
+    context_filtered = []
+
     for ctx in context:
-    
         try:
-            combined_text += ctx['text'] + "\n"
+            text = ctx['text'] 
+            url = ctx['url']
+            context_filtered.append({'text': text, 'url': url})
         except:
             pass
 
     # print(context)
-    docs = getRag(query, combined_text)
+    docs = getRag(query, context_filtered)
   
-    return docs
+    return jsonify(docs)
 
 if __name__ == '__main__':
     app.run(port=5002, debug=True)
