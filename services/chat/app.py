@@ -6,9 +6,11 @@ app = Flask(__name__)
 
 @app.route('/generate_response', methods=['POST'])
 def generate_response():
-    data = json.loads(request.json)
-    prompt=data['prompt']
-    context = data['context']
+    data = request.json
+    
+    prompt=data['prompt'] 
+    context = data['context'] 
+    schema = data['schema'] 
 
     schema_api = {
         'contributions': {
@@ -18,17 +20,18 @@ def generate_response():
     }
 
     schema_gen = {}
-
-    for key in schema_api:
-        if(schema_api[key]['type']== 'str'):
+    schema = json.loads(schema)
+    for key in schema:
+        if(schema[key]['type'] == 'str'):
             t = str 
-        elif (schema_api[key]['type'] == 'int'):
+        elif (schema[key]['type'] == 'int'):
             t = int
-        schema_gen[key] = (t, schema_api[key]['value'])
+        schema_gen[key] = (t, schema[key]['value'])
 
-    # print(schema_gen)
+    print(schema_gen)
     
     response = get_response(context,prompt,schema_gen)
+    print(response)
     return response
 if __name__ == '__main__':
     app.run(debug=True, port=5001)

@@ -27,7 +27,7 @@ function Search() {
               <div className="px-3 py-2 max-w-fit rounded-full flex items-center justify-between cursor-pointer text-white/60 roboto-regular hover:bg-white/5">
                 <GoFilter className="mr-1.5" /> Filter
               </div>
-              <div className="px-3 py-2 max-w-fit rounded-full flex items-center justify-between cursor-pointer text-white/80 roboto-regular hover:bg-white/10">
+              <div className="px-3 py-2 max-w-fit rounded-full flex items-center justify-between cursor-pointer text-white/8services/browser/tsconfig.json0 roboto-regular hover:bg-white/10">
                 <FaArrowRight />
               </div>
             </div>
