@@ -27,8 +27,6 @@ def generate_response():
         elif (schema[key]['type'] == 'int'):
             t = int
         schema_gen[key] = (t, schema[key]['value'])
-
-    print(schema_gen)
     
     response = get_response(context,prompt,schema_gen)
     print(response)

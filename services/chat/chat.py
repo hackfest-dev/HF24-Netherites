@@ -1,55 +1,36 @@
 import os
 from dotenv import load_dotenv, find_dotenv
 load_dotenv(find_dotenv())
-from langchain_core.output_parsers import JsonOutputParser
+from langchain_core.output_parsers import JsonOutputParser, PydanticOutputParser
 from langchain_google_genai import GoogleGenerativeAI
+from langchain_anthropic import ChatAnthropic
 from langchain.prompts import PromptTemplate
-from langchain_core.pydantic_v1 import  create_model
+from langchain_core.pydantic_v1 import  create_model, BaseModel
 
 def get_response(context, prompt,schema):
     try:
-
-
         api_key = os.getenv('GOOGLE_API_KEY')
-        llm = GoogleGenerativeAI(model="gemini-pro", google_api_key=api_key)
-        
-        pydantic_model=create_model('model',**schema)
+        # llm = GoogleGenerativeAI(model="gemini-pro", google_api_key=api_key)
+        llm = ChatAnthropic(model="claude-3-sonnet-20240229", anthropic_api_key=os.getenv('ANTHROPIC_API_KEY'))
+        pydantic_model=create_model('model',**schema,__base__=BaseModel)
 
         parser = JsonOutputParser(pydantic_object=pydantic_model)
 
-        prompt = PromptTemplate(
-            template="""
-            Answer the user query based the context provided(if no context then answer from your knowledge base).
+        schema_instructions = parser.get_format_instructions()
 
-            Strictly respond in :\n {format_instructions}
+        prompt = """
+        Answer the user query based on or not on the context provided. Depends on the availibility of context. 
+            User Query : {query}
 
-            User Query : {query}\n
+            Strictly respond only in JSON format not in md and in the following format instructions -
+            {schema_instructions}
 
-            Context:\n   {context}
-            """,
-            input_variables=["query", "context"],
-            partial_variables={"format_instructions": parser.get_format_instructions()}
-        )
+            Context: {context}
+        """.format(query=prompt, schema_instructions=schema_instructions, context=context)
 
-        chain = prompt | llm | parser
+        response = llm.invoke(prompt)
 
-        response = chain.invoke({"query": prompt, "context":context})
-
-        
-
-        # template = """
-        #     SYSTEM: Answer the user query based the context provided. If no context is provided then use your own knowledge. 
-        #     Strictly Respond in correct JSON format and in the following format schema instructions (failing to do so is hazardous) -
-        #     {schema} \n
-        #     User Query : {prompt} \n
-        #     Context:\n {context} """.format(schema=schema, prompt=prompt, context=context)
-        
-        # print(template)  
-        
-        # response = llm.invoke(template)
-
-        # print(response)
-        return response 
+        return response.content.replace('\n','').replace('```json','').replace('```','')
 
     except Exception as e:
         return str(e)

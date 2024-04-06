@@ -20,12 +20,12 @@ app.get('/generate', async (req, res) => {
     url: `${LLM_BASE_URL}/generate_response`,
     data: {
       prompt: `
-        Given the following user prompt, generate a good google search query to search the web for relevant information:
+        Given the following user prompt, generate a perfect google search query to search the web to answer the user prompt:
       
         user prompt : ${prompt}
       `,
       schema: `{"prompt": { "type": "str", "value":"google search prompt goes here"  } }`,
-      context: [],
+      context: 'no context, use your known knowledge of LLM',
     },
     headers: {
       'Content-Type': 'application/json',
@@ -33,13 +33,20 @@ app.get('/generate', async (req, res) => {
   });
 
   let data = response.data;
-  res.json(response.data);
-  const google_query = JSON.parse(data)?.prompt;
+
+  const google_query = data.prompt;
+
+  console.log('google_query:', google_query);
 
   response = await axios({
     method: 'post',
     url: `${GOOGLE_BASE_URL}/search?q=${google_query}`,
-
+    data: {
+      options: {
+        safe: true,
+        params: {},
+      },
+    },
     headers: {
       'Content-Type': 'application/json',
     },
@@ -47,7 +54,7 @@ app.get('/generate', async (req, res) => {
 
   data = response.data;
 
-  // res.json(data);
+  res.json(data);
 });
 
 app.listen(8080, () => {

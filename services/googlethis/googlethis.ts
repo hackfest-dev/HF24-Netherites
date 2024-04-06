@@ -6,9 +6,9 @@ export const googleSearch: RequestHandler = async (req, res, next) => {
   try {
     let search = req.query.q as string;
     const options: googlethisOptions = req.body.options;
-    options.safe = options.safe || true;
-    options.parse_ads = options.parse_ads || false;
-    for (const param in options.params) {
+    options.safe = options?.safe || true;
+    options.parse_ads = options?.parse_ads || false;
+    for (const param in options?.params) {
       //@ts-ignore
       search += ` ${param}:${options.params[param]}`;
     }
