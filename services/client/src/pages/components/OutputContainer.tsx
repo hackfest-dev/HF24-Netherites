@@ -2,6 +2,8 @@ import { useEffect, useCallback, useState } from 'react';
 import { Skeleton } from '../../components/ui/skeleton';
 import { useNavigate } from 'react-router-dom';
 
+import Answer from './Answer';
+
 //@ts-ignore
 const Card = ({ title, content }) => (
   <div className="border-gray-400 border rounded-lg p-4 mb-4">
@@ -13,7 +15,7 @@ const Card = ({ title, content }) => (
 function SkeletonCard() {
   return (
     <div className="flex flex-col space-y-3">
-      <Skeleton className="h-52 w-72 rounded-xl" />
+      {/* <Skeleton className="h-52 w-72 rounded-xl" /> */}
       <div className="space-y-2">
         <Skeleton className="h-4 w-72" />
         <Skeleton className="h-4 w-72" />
@@ -40,12 +42,22 @@ export default function OutputContainer() {
       `http://172.16.16.251:8080/generate?prompt=${promptValue}`,
       options
     );
+
     setIsLoading(false);
     if (!response.ok) {
       throw new Error('Network response was not ok');
     }
 
     const responseData = await response.json();
+    // const responseData = {
+    //   response:
+    //     "Here is a technical analysis summary for Tata Motors Ltd based on the information provided:Tata Motors Ltd (TATAMOTORS) is currently trading at 1007.1, slightly down 0.44% from the previous day's close. The trading volume of 4.5 million shares is lower than the 5-period average volume of 7.7 million shares. The stock's technical strength is rated as bullish with a score of 68.2% based on analysis of various indicators:- MACD shows a strong bullish signal with the MACD line crossing above the signal line, indicating upward momentum.- Awesome Oscillator is bullish, showing a recent bullish reversal. - Stochastic RSI and Slow Stochastic are both in overbought territory above 80 but the uptrend appears strong, suggesting further upside potential.- The stock has broken out positively from its Bollinger band, a bullish signal.Moving averages show the stock trading above all key SMAs from the 5-day to 200-day, another bullish indication. Oscillators like RSI, CCI, and Momentum are also in bullish territory.Overall, the technical picture for Tata Motors looks strong based on the prevalent uptrend, bullish indicator signals, and the stock's position relative to moving averages and other technical levels like pivot points and Bollinger bands.",
+    //   sources: [
+    //     'https://in.tradingview.com/symbols/NSE-TATAMOTORS/technicals/',
+    //     'https://trendlyne.com/equity/technical-analysis/TATAMOTORS/1362/tata-motors-ltd/',
+    //     'https://www.topstockresearch.com/rt/Stock/TATAMOTORS/TechnicalAnalysis',
+    //   ],
+    // };
     setSources(responseData?.sources);
     setAnswer(responseData?.response);
 
@@ -53,45 +65,39 @@ export default function OutputContainer() {
     return responseData;
   }, []);
 
+  const prompt = localStorage.getItem('prompt');
   useEffect(() => {
-    const prompt = localStorage.getItem('prompt');
     console.log(prompt);
     if (prompt) handlePrompt(prompt);
     else navigate('/');
-  }, [handlePrompt, navigate]);
+  }, [handlePrompt, navigate, prompt]);
 
   return (
     <div className="py-4 h-full w-full">
-      <div className="h-full w-full bg-vcharBlack rounded-lg border-1 border-gray-100 flex items-center justify-center">
+      <div className="h-full w-full bg-vcharBlack rounded-lg border-1 border-gray-100 flex justify-center items-start">
         {!isLoading && (
-          <div className="p-8">
-            <div className="grid grid-cols-2 gap-4 mb-8">
-              <div>
-                <div className="flex justify-between">
-                  <h1 className="text-2xl font-bold mb-4">Sources</h1>
-                </div>
-                <Card
-                  title="Sources"
-                  content={sources.map((source, index) => (
-                    <div key={index}>{source}</div>
-                  ))}
-                />
-              </div>
-              <div>
-                <div className="flex justify-end">
-                  <div className="ml-4">
-                    <h2 className="text-lg font-semibold mb-2">Images</h2>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div>
-              <Card title="Answer" content={answer} />
-            </div>
-          </div>
+          // <div className="p-8">
+          //   <div className="grid grid-cols-2 gap-4 mb-8">
+          //     <div>
+          //       <div className="flex justify-between">
+          //         <h1 className="text-2xl font-bold mb-4">Sources</h1>
+          //       </div>
+          //       <Card
+          //         title="Sources"
+          //         content={sources.map((source, index) => (
+          //           <div key={index}>{source}</div>
+          //         ))}
+          //       />
+          //     </div>
+          //   </div>
+          //   <div>
+          //     <Card title="Answer" content={answer} />
+          //   </div>
+          // </div>
+          <Answer prompt={prompt || ''} sources={sources} answer={answer} />
         )}
         {isLoading && (
-          <div>
+          <div className="h-full flex items-center justify-center">
             <SkeletonCard />
           </div>
         )}
