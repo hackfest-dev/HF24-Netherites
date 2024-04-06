@@ -1,5 +1,5 @@
 import axios from 'axios';
-import express from 'express';
+import express, { text } from 'express';
 import cors from 'cors';
 
 const BROWSER_BASE_URL = 'http://localhost:3000';
@@ -54,7 +54,35 @@ app.get('/generate', async (req, res) => {
 
   data = response.data;
 
-  res.json(data);
+  const results = data.results;
+
+  console.log('got results:');
+
+  const promises: Promise<any>[] = [];
+  let responses: string[] = [];
+  for (let i = 0; i < results.length; i++) {
+    promises.push(
+      fetch('http://localhost:3000/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          url: results[i]?.url,
+          text: 'true',
+        }),
+      })
+        .then((response: Response) => response.json())
+        .then((data) => {
+          responses.push(data.TEXT);
+        })
+        .catch((error: any) => console.log('error', error))
+    );
+  }
+
+  await Promise.all(promises);
+
+  res.json(responses);
 });
 
 app.listen(8080, () => {
