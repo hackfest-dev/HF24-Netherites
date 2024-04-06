@@ -29,7 +29,7 @@ def generate_response():
         schema_gen[key] = (t, schema[key]['value'])
     
     response = get_response(context,prompt,schema_gen)
-    print(response)
+    # print(response)
     return response
 if __name__ == '__main__':
     app.run(debug=True, port=5001)
