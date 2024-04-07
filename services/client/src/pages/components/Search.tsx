@@ -84,7 +84,6 @@ const Search: React.FC = () => {
   };
   const [promptValue, setPromptValue] = useState('');
 
-  console.log(promptValue);
   useEffect(() => {
     window.addEventListener('click', handleClickOutside);
     return () => {

@@ -11,7 +11,7 @@ def get_response(context, prompt,schema):
     try:
         api_key = os.getenv('GOOGLE_API_KEY')
         #llm = GoogleGenerativeAI(model="gemini-pro", google_api_key=api_key)
-        llm = ChatAnthropic(model="claude-3-opus-20240229", anthropic_api_key=os.getenv('ANTHROPIC_API_KEY'))
+        llm = ChatAnthropic(model="claude-3-sonnet-20240229", anthropic_api_key="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")
         pydantic_model=create_model('model',**schema,__base__=BaseModel)
 
         parser = JsonOutputParser(pydantic_object=pydantic_model)
@@ -30,6 +30,7 @@ def get_response(context, prompt,schema):
         """.format(query=prompt, schema_instructions=schema_instructions, context=context)
 
         response = llm.invoke(prompt)
+            
 
         return response.content.replace('\n','').replace('```json','').replace('```','')
 

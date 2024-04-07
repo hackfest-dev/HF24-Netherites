@@ -1,5 +1,4 @@
 import { useEffect, useCallback, useState } from 'react';
-import { Skeleton } from '../../components/ui/skeleton';
 import { useNavigate } from 'react-router-dom';
 
 import Answer from './Answer';

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Card } from '../../components/ui/card';
 
-import {} from '../../App';
+import { ScrollArea } from '../../components/ui/scroll-area';
 
 function truncateText(text, maxLength) {
   if (text && text?.length <= maxLength) {

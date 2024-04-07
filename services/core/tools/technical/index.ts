@@ -1,5 +1,8 @@
 import Tool from '../tool';
 import axios from 'axios';
+
+import { extractJSON } from '../../utils';
+
 export default class TechnicalAnalysis extends Tool {
   async invoke(user_prompt: string) {
     try {
@@ -27,23 +30,33 @@ export default class TechnicalAnalysis extends Tool {
       );
 
       const company_name = llmResponse.data.company_name;
-      const interval = llmResponse.data.interval;
+      const interval = llmResponse.data.interval || '1d';
+
+      console.log(company_name, interval);
 
       const tradingViewResponse = await axios.get(
-        `http://localhost:5003/tradingview?company_name=${company_name}&interval=${interval}`
+        `http://localhost:5123/tradingview?company_name=${company_name}&interval=${interval}`
       );
 
       const values = tradingViewResponse.data.values;
       const symbol = tradingViewResponse.data.symbol;
 
+      console.log(values, symbol);
+
       const research = await axios.post(
         'http://localhost:5001/generate_response',
         {
           prompt: `
-                Given the following user prompt, based on the data of the values of the company's stock price, generate a technical analysis of the company's stock price.
+                Given the following user prompt,  based on the data of the values of the company's stock price, generate a technical analysis of the company's stock price.
                 what the factors would affect and what would be the risks and benefits of investing in the company's stock.
 
-                user prompt : This are the values of the stock prices and values in json format ${values}
+                
+
+                user prompt : This are the values of the stock prices and values in json format are ${JSON.stringify(
+                  values
+                )}
+
+                STRICTLY RESPOND ONLY IN BELOW JSON FORMAT
               `,
           schema: `{"analysis": { "type": "str", "value":"technical analysis of the company's stock price" }}`,
           context: 'no context, use your known knowledge of LLM',
@@ -54,7 +67,10 @@ export default class TechnicalAnalysis extends Tool {
           },
         }
       );
-      const analysis = research.data.analysis;
+      // @ts-ignore
+      const analysis = extractJSON(research.data).analysis;
+
+      console.log('analysis', research.data);
 
       response = {
         response: analysis,

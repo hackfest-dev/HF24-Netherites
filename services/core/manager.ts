@@ -75,6 +75,7 @@ const manager = async (user_prompt: string) => {
     },
   });
 
+  console.log(response.data);
   let data = extractJSON(response.data);
 
   // @ts-ignore
