@@ -59,10 +59,11 @@ export default function OutputContainer() {
 
   const prompt = localStorage.getItem('prompt');
   useEffect(() => {
+    const prompt = localStorage.getItem('prompt');
     console.log(prompt);
     if (prompt) handleAutoPrompt(prompt);
     else navigate('/');
-  }, [handlePrompt, handleAutoPrompt, navigate, prompt]);
+  }, []);
 
   useEffect(() => {
     return () => {

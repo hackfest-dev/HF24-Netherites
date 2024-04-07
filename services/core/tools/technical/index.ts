@@ -58,17 +58,22 @@ export default class TechnicalAnalysis extends Tool {
 
       response = {
         response: analysis,
-        sources: {
-          title: 'TradingView',
-          description: `Technical Analysis of ${company_name} `,
-          url: `http://in.tradingview.com/symbols/BSE-${symbol}`,
-          favicon: 'https://www.tradingview.com/static/images/favicon.ico',
-        },
+        sources: [
+          {
+            title: 'TradingView',
+            description: `Technical Analysis of ${company_name} `,
+            url: `http://in.tradingview.com/symbols/BSE-${symbol}`,
+            favicon: 'https://www.tradingview.com/static/images/favicon.ico',
+          },
+        ],
       };
       return response;
     } catch (error) {
       console.log('error', error);
+      return {
+        response: '',
+        sources: [],
+      };
     }
-
   }
 }
