@@ -17,6 +17,14 @@ const TOOLS = [
     name: 'comparative_analysis',
     use: 'compares two or more companies or stocks or markets',
   },
+  {
+    name:'competitive analysis',
+    use:'searches and analyses relations between for competitors of a company'
+  },
+  {
+    name:'technical_analysis',
+    use:'generates technical analysis of a company\'s stock price'
+  }
 ];
 
 const TOOL_MAP: {

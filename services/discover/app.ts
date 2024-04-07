@@ -1,17 +1,19 @@
 import express from 'express';
-
+import cors from 'cors';
 const app = express();
 
 app.use(express.json());
+app.use(cors());
+
 
 const GOOGLE_BASE_URL = 'http://localhost:5000';
 
 app.get('/competitor', (req, res) => {
   try {
     const company_name = req.query.company_name;
-    const interval = req.query.interval;
+    const before = req.query?.before;
+    const after = req.query?.after;
 
-    
     fetch(GOOGLE_BASE_URL + '/search?q=' + company_name, {
       method: 'POST',
       headers: {
@@ -24,6 +26,8 @@ app.get('/competitor', (req, res) => {
             inurl: 'vs',
             intitle: company_name,
             intext: 'competitor',
+            before,
+            after,
           },
         },
       }),
@@ -40,5 +44,5 @@ app.get('/competitor', (req, res) => {
 });
 
 app.listen(5004, () => {
-  console.log('Server is running on port 5000');
+  console.log('Server is running on port 5004');
 });
