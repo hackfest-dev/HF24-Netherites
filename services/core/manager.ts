@@ -5,6 +5,8 @@ import { extractJSON } from './utils';
 import GenericResearch from './tools/generic_research';
 import Tool from './tools/tool';
 import { emit } from './app';
+import CompetitorResearch from './tools/competitor';
+import TechnicalAnalysis from './tools/technical';
 
 const LLM_BASE_URL = 'http://localhost:5001';
 
@@ -18,19 +20,21 @@ const TOOLS = [
     use: 'compares two or more companies or stocks or markets',
   },
   {
-    name:'competitive analysis',
-    use:'searches and analyses relations between for competitors of a company'
+    name: 'competitive analysis',
+    use: 'searches and analyses relations between for competitors of a company',
   },
   {
-    name:'technical_analysis',
-    use:'generates technical analysis of a company\'s stock price'
-  }
+    name: 'technical_analysis',
+    use: "generates technical analysis of a company's stock price",
+  },
 ];
 
 const TOOL_MAP: {
   [key: string]: Tool;
 } = {
   generic_researcher: new GenericResearch(),
+  competitive_analysis: new CompetitorResearch(),
+  technical_analysis: new TechnicalAnalysis(),
 };
 
 const tool_info = TOOLS.map((tool) => {
