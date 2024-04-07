@@ -12,11 +12,11 @@ function truncateText(text, maxLength) {
 
 function Answer({
   prompt,
-  answer,
+  answers,
   sources,
 }: {
   prompt: string;
-  answer: string;
+  answers: string[];
   sources: {
     title: string;
     description: string;
@@ -24,13 +24,17 @@ function Answer({
     favicon: string;
   }[];
 }) {
-  console.log(prompt, answer, sources);
+  console.log(prompt, answers, sources);
 
   return (
     <div className="w-2/3 h-full flex justify-center items-start pt-10">
       <div className="w-2/3">
         <div className="text-2xl space-grotesk">{prompt}</div>
-        <div className="text-lg nato-sans mt-4">{answer}</div>
+        {answers.map((answer, index) => (
+          <div key={index} className="text-lg nato-sans mt-4">
+            {answer}
+          </div>
+        ))}
       </div>
 
       <div className="ml-6 w-1/3">

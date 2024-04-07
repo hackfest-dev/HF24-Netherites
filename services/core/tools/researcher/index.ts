@@ -117,12 +117,24 @@ async function researcher(user_prompt: string, research_context: string) {
 
     if (typeof data === 'object') {
       data?.forEach((result: any) => {
-        sources.push({
-          title: result?.title,
-          description: result?.description,
-          url: result?.url,
-          favicon: result?.favicon,
-        });
+        const existingSourceIndex = sources.findIndex(
+          (source) => source.url === result?.url
+        );
+
+        if (existingSourceIndex === -1) {
+          sources.push({
+            title: result?.title,
+            description: result?.description,
+            url: result?.url,
+            favicon: result?.favicon,
+          });
+        } else {
+          sources[existingSourceIndex] = {
+            ...sources[existingSourceIndex],
+            title: result?.title,
+            description: result?.description,
+          };
+        }
       });
     }
 

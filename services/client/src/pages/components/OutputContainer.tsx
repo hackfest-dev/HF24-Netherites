@@ -8,10 +8,11 @@ import { io } from 'socket.io-client';
 
 // @ts-ignore
 const socket = io.connect('http://localhost:8080');
+// @ts-ignore
 
 export default function OutputContainer() {
   const [isLoading, setIsLoading] = useState(false);
-  const [answer, setAnswer] = useState('');
+  const [answers, setAnswers] = useState([]);
   const [sources, setSources] = useState([]);
 
   const navigate = useNavigate();
@@ -36,34 +37,67 @@ export default function OutputContainer() {
     const responseData = await response.json();
 
     setSources(responseData?.sources);
-    setAnswer(responseData?.response);
+    setAnswers([responseData?.response]);
 
     console.log(responseData);
     return responseData;
   }, []);
 
+  const handleAutoPrompt = useCallback(async (promptValue: string) => {
+    const options = {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json', // You can adjust the content type as needed
+      },
+    };
+    setIsLoading(true);
+    fetch(
+      `http://172.16.16.251:8080/autonomous?prompt=${promptValue}`,
+      options
+    );
+  }, []);
+
   const prompt = localStorage.getItem('prompt');
   useEffect(() => {
     console.log(prompt);
-    if (prompt) handlePrompt(prompt);
+    if (prompt) handleAutoPrompt(prompt);
     else navigate('/');
-  }, [handlePrompt, navigate, prompt]);
+  }, [handlePrompt, handleAutoPrompt, navigate, prompt]);
 
-  // @ts-ignore
+  useEffect(() => {
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
+
   socket.on('tool_response', (data) => {
     // @ts-ignore
+
+    if (data.message) return;
     console.log('socket data', data);
-    setSources((prev) => [...prev, ...data?.sources]);
-    setAnswer((prev) => {
-      return prev + '\n\n\n\n' + data.response;
-    });
+    setIsLoading(false);
+
+    const removeDuplicateSources = (sources) => {
+      const uniqueSources = new Map();
+      sources.forEach((source) => {
+        uniqueSources.set(source.url, source);
+      });
+      return Array.from(uniqueSources.values());
+    };
+
+    const removeDuplicateAnswers = (answers) => {
+      return [...new Set(answers)];
+    };
+
+    setSources((prev) => removeDuplicateSources([...prev, ...data?.sources]));
+    setAnswers((prev) => removeDuplicateAnswers([...prev, data?.response]));
   });
 
   return (
     <div className="py-4 h-full w-full">
       <div className="h-full w-full bg-vcharBlack rounded-lg border-1 border-gray-100 flex justify-center items-start">
         {!isLoading ? (
-          <Answer prompt={prompt || ''} sources={sources} answer={answer} />
+          <Answer prompt={prompt || ''} sources={sources} answers={answers} />
         ) : (
           <AnswerSkeleton prompt={prompt || ''} />
         )}

@@ -217,6 +217,11 @@ app.get('/autonomous', async (req, res) => {
   }
 });
 
+app.get('/emit', (_, res) => {
+  emit('tool_response', { message: 'Hello from server' });
+  res.json({ message: 'Emitted' });
+});
+
 const server = http.createServer(app);
 
 const io = new Server(server, {
@@ -231,15 +236,16 @@ const io = new Server(server, {
 
 ioConfig(io);
 
-export const emit = (eventName: string, data: any) => {
+export function emit(eventName: string, data: any) {
   if (io) {
+    console.log('EMITTING');
     io.emit(eventName, data);
   } else {
     console.error(
       'Socket.IO is not initialized. Make sure to call initializeSocketIO with the Server instance.'
     );
   }
-};
+}
 
 server.listen(8080, () => {
   console.log('Server is running on port 8080');
