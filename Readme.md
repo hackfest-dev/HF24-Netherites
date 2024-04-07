@@ -2,6 +2,7 @@
 # vChar
 
 ## Problem Statement:
+
 Existing Indian stock research tools struggle to connect data
 with the complex factors affecting investments, hindering
 informed decision-making.
@@ -20,7 +21,7 @@ AI will have the autonomy to select and utilize these tools as often as
 necessary to ensure the best insights in the form of conversation but
 powered with the sources and interactive graphics.
 
-Technology Stack:
+## Technology Stack:
 - Core tech: 
     - NextJs
     - PWA
@@ -32,14 +33,18 @@ Technology Stack:
     - Trading View
     - NSE
 
-Project Members:
+## Project Members:
+
 - [Pratik Pakhle](https://github.com/pratikpakhale)
 - [Mandar Dighe](https://github.com/Mandy767)
 - [Chinmay Shewale](https://github.com/chinma-yyy)
 - [Shashwat Chandel](https://github.com/Shashwatt-git)
 
-Video link: 
+## Architecture
 
+![image](https://drive.google.com/file/d/1wosTC6pSE58t4zhRyh88xQhVuXO0AwR0/view?usp=sharing)
+
+Image link :- https://drive.google.com/file/d/1wosTC6pSE58t4zhRyh88xQhVuXO0AwR0/view?usp=sharing
 
 
 
